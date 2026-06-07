@@ -27,6 +27,7 @@ int main()
     int remaining[n];
     int release[n];
 
+    // Input Tasks
     for(int i = 0; i < n; i++)
     {
         printf("\nTask T%d\n", i + 1);
@@ -37,7 +38,7 @@ int main()
         printf("Period: ");
         scanf("%d", &period[i]);
 
-        remaining[i] = 0; 
+        remaining[i] = 0;
         release[i] = 0;
     }
 
@@ -51,14 +52,58 @@ int main()
 
     printf("\nHyperperiod = %d\n", hyper);
 
+    // Calculate CPU Utilization
+    float utilization = 0;
+
+    for(int i = 0; i < n; i++)
+    {
+        utilization += (float)exec[i] / period[i];
+    }
+
+    printf("CPU Utilization = %.2f\n", utilization);
+    printf("CPU Utilization = %.2f%%\n", utilization * 100);
+
+    printf("\nPriority Order (Smaller Period = Higher Priority)\n");
+
+    for(int p = 1; p <= n; p++)
+    {
+        int min = -1;
+
+        for(int i = 0; i < n; i++)
+        {
+            int alreadyPrinted = 0;
+
+            for(int j = 0; j < p - 1; j++)
+            {
+                // nothing needed here
+            }
+
+            if(min == -1 || period[i] < period[min])
+            {
+                int used = 0;
+
+                for(int k = 0; k < i; k++)
+                {
+                    if(period[k] == period[i] && k < i)
+                    {
+                        used = 1;
+                    }
+                }
+
+                if(!used)
+                    min = i;
+            }
+        }
+    }
+
     printf("\nGantt Chart:\n");
 
     for(int time = 0; time < hyper; time++)
     {
-        // Release tasks
+        // Release tasks at their period
         for(int i = 0; i < n; i++)
         {
-            if(time == release[i]) //check any task comes (ex: t2 every 5sec it will relases 2 unit work)
+            if(time == release[i])
             {
                 remaining[i] = exec[i];
                 release[i] += period[i];
@@ -67,8 +112,7 @@ int main()
 
         int selected = -1;
 
-        // Select highest priority task
-        // Smallest period = highest priority
+        // Select task with smallest period
         for(int i = 0; i < n; i++)
         {
             if(remaining[i] > 0)
