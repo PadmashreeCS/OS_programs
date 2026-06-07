@@ -1,0 +1,126 @@
+#include <stdio.h>
+
+int gcd(int a, int b)
+{
+    while(b != 0)
+    {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+int lcm(int a, int b)
+{
+    return (a * b) / gcd(a, b);
+}
+
+int main()
+{
+    int n;
+
+    printf("Enter number of tasks: ");
+    scanf("%d", &n);
+
+    int exec[n];
+    int period[n];
+
+    int remaining[n];
+    int release[n];
+    int absDeadline[n];
+
+    for(int i = 0; i < n; i++)
+    {
+        printf("\nTask T%d\n", i + 1);
+
+        printf("Execution Time: ");
+        scanf("%d", &exec[i]);
+
+        printf("Period: ");
+        scanf("%d", &period[i]);
+
+        remaining[i] = 0;
+        release[i] = 0;
+        absDeadline[i] = 0;
+    }
+
+    // Hyperperiod
+    int hyper = period[0];
+
+    for(int i = 1; i < n; i++)
+    {
+        hyper = lcm(hyper, period[i]);
+    }
+
+    printf("\nHyperperiod = %d\n", hyper);
+
+    // CPU Utilization
+    float utilization = 0;
+
+    for(int i = 0; i < n; i++)
+    {
+        utilization += (float)exec[i] / period[i];
+    }
+
+    printf("CPU Utilization = %.2f%%\n",
+           utilization * 100);
+
+    printf("\nGantt Chart:\n");
+
+    for(int time = 0; time < hyper; time++)
+    {
+        // Release Jobs
+        for(int i = 0; i < n; i++)
+        {
+            if(time == release[i])
+            {
+                remaining[i] = exec[i];
+
+                // Deadline = Period
+                absDeadline[i] = time + period[i];
+
+                release[i] += period[i];
+            }
+        }
+
+        int selected = -1;
+
+        // EDF Selection
+        for(int i = 0; i < n; i++)
+        {
+            if(remaining[i] > 0)
+            {
+                if(selected == -1 ||
+                   absDeadline[i] < absDeadline[selected])
+                {
+                    selected = i;
+                }
+            }
+        }
+
+        if(selected == -1)
+        {
+            printf("| Idle ");
+        }
+        else
+        {
+            printf("| T%d ", selected + 1);
+
+            remaining[selected]--;
+        }
+    }
+
+    printf("|\n\n");
+
+    printf("Time : ");
+
+    for(int i = 0; i <= hyper; i++)
+    {
+        printf("%d ", i);
+    }
+
+    printf("\n");
+
+    return 0;
+}
