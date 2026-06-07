@@ -24,6 +24,7 @@ int main()
     printf("\nExecution Order:\n");
 
     int done;
+    // P1 Burst = 6 Weight = 3 , P2 Burst = 6 Weight = 1 >> 1st-> p1 p1 p1 p2 , 2nd-> p1 p1 p1 
 
     do
     {
