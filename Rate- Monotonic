@@ -1,0 +1,106 @@
+#include <stdio.h>
+
+int gcd(int a, int b)
+{
+    while(b != 0)
+    {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+int lcm(int a, int b)
+{
+    return (a * b) / gcd(a, b);
+}
+
+int main()
+{
+    int n;
+
+    printf("Enter number of tasks: ");
+    scanf("%d", &n);
+
+    int exec[n], period[n];
+    int remaining[n];
+    int release[n];
+
+    for(int i = 0; i < n; i++)
+    {
+        printf("\nTask T%d\n", i + 1);
+
+        printf("Execution Time: ");
+        scanf("%d", &exec[i]);
+
+        printf("Period: ");
+        scanf("%d", &period[i]);
+
+        remaining[i] = 0; 
+        release[i] = 0;
+    }
+
+    // Calculate Hyperperiod
+    int hyper = period[0];
+
+    for(int i = 1; i < n; i++)
+    {
+        hyper = lcm(hyper, period[i]);
+    }
+
+    printf("\nHyperperiod = %d\n", hyper);
+
+    printf("\nGantt Chart:\n");
+
+    for(int time = 0; time < hyper; time++)
+    {
+        // Release tasks
+        for(int i = 0; i < n; i++)
+        {
+            if(time == release[i]) //check any task comes (ex: t2 every 5sec it will relases 2 unit work)
+            {
+                remaining[i] = exec[i];
+                release[i] += period[i];
+            }
+        }
+
+        int selected = -1;
+
+        // Select highest priority task
+        // Smallest period = highest priority
+        for(int i = 0; i < n; i++)
+        {
+            if(remaining[i] > 0)
+            {
+                if(selected == -1 ||
+                   period[i] < period[selected])
+                {
+                    selected = i;
+                }
+            }
+        }
+
+        if(selected == -1)
+        {
+            printf("| Idle ");
+        }
+        else
+        {
+            printf("| T%d ", selected + 1);
+            remaining[selected]--;
+        }
+    }
+
+    printf("|\n\n");
+
+    printf("Time : ");
+    for(int i = 0; i <= hyper; i++)
+    {
+        printf("%d ", i);
+    }
+
+    printf("\n");
+
+    return 0;
+}
