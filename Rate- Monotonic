@@ -23,11 +23,11 @@ int main()
     printf("Enter number of tasks: ");
     scanf("%d", &n);
 
-    int exec[n], period[n];
+    int exec[n];
+    int period[n];
     int remaining[n];
     int release[n];
 
-    // Input Tasks
     for(int i = 0; i < n; i++)
     {
         printf("\nTask T%d\n", i + 1);
@@ -42,7 +42,7 @@ int main()
         release[i] = 0;
     }
 
-    // Calculate Hyperperiod
+    // Hyperperiod
     int hyper = period[0];
 
     for(int i = 1; i < n; i++)
@@ -52,7 +52,7 @@ int main()
 
     printf("\nHyperperiod = %d\n", hyper);
 
-    // Calculate CPU Utilization
+    // CPU Utilization
     float utilization = 0;
 
     for(int i = 0; i < n; i++)
@@ -60,47 +60,14 @@ int main()
         utilization += (float)exec[i] / period[i];
     }
 
-    printf("CPU Utilization = %.2f\n", utilization);
-    printf("CPU Utilization = %.2f%%\n", utilization * 100);
-
-    printf("\nPriority Order (Smaller Period = Higher Priority)\n");
-
-    for(int p = 1; p <= n; p++)
-    {
-        int min = -1;
-
-        for(int i = 0; i < n; i++)
-        {
-            int alreadyPrinted = 0;
-
-            for(int j = 0; j < p - 1; j++)
-            {
-                // nothing needed here
-            }
-
-            if(min == -1 || period[i] < period[min])
-            {
-                int used = 0;
-
-                for(int k = 0; k < i; k++)
-                {
-                    if(period[k] == period[i] && k < i)
-                    {
-                        used = 1;
-                    }
-                }
-
-                if(!used)
-                    min = i;
-            }
-        }
-    }
+    printf("CPU Utilization = %.2f%%\n",
+           utilization * 100);
 
     printf("\nGantt Chart:\n");
 
     for(int time = 0; time < hyper; time++)
     {
-        // Release tasks at their period
+        // Release tasks
         for(int i = 0; i < n; i++)
         {
             if(time == release[i])
@@ -112,7 +79,8 @@ int main()
 
         int selected = -1;
 
-        // Select task with smallest period
+        // RMS Selection
+        // Smaller Period = Higher Priority
         for(int i = 0; i < n; i++)
         {
             if(remaining[i] > 0)
@@ -132,6 +100,7 @@ int main()
         else
         {
             printf("| T%d ", selected + 1);
+
             remaining[selected]--;
         }
     }
@@ -139,6 +108,7 @@ int main()
     printf("|\n\n");
 
     printf("Time : ");
+
     for(int i = 0; i <= hyper; i++)
     {
         printf("%d ", i);
